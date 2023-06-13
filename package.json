@@ -1,0 +1,38 @@
+{
+  "name": "@lyavon/es6_crypto",
+  "version": "1.0.0",
+  "description": "Convenient secp256r1 wrapper for srypto.subtle",
+  "license": {
+    "type": "GPL-3.0",
+    "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+  },
+  "author": "Leonid Ragunovich <leonid.ragunovich@gmail.com>",
+  "type": "module",
+  "keywords": [
+    "P-256",
+    "crypto",
+    "crypto.subtle",
+    "cryptography",
+    "secp256r1",
+    "subtle"
+  ],
+  "scripts": {
+    "documentation": "sh ./scripts/documentation.sh",
+    "show-documentation": "sh ./scripts/show-documentation.sh",
+    "standard": "sh ./scripts/standard.sh"
+  },
+  "exports": {
+    ".": {
+      "default": "./src/crypto.js"
+    }
+  },
+  "devDependencies": {
+    "jsdoc": "",
+    "standard": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lyavon/es6_crypto.git"
+  },
+  "homepage": "https://github.com/Lyavon/es6_crypto"
+}

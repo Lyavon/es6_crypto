@@ -19,13 +19,72 @@ simplify usage of secp256r1 cryptography for ES6.
 - jsdoc (optional)
 - standard (optional)
 
-## How to use:
-### Import and Export PrivKey:
+## Usage:
+
+### As NPM Package
+
+#### Installation
+
+```sh
+# No Dependencies
+npm install "git+https://github.com/Lyavon/es6_crypto.git"
+
+# With Dev Dependencies
+npm install "git+https://github.com/Lyavon/es6_crypto.git" --save-dev
+```
+
+#### Scripts usage
+Awailable only if dev dependencies were installed:
+
+```sh
+# Generate jsdoc (output is going to *documentation* directory of project root):
+npm run documentation
+
+# After generating documentation it can be opened with:
+npm run show-documentation
+
+# Run standard (tom_wu directory is untouched):
+npm run standard
+```
+
+### As Standalone Package
+
+#### Installation
+
+```sh
+git clone https://github.com/Lyavon/es6_crypto.git
+
+# Optionally jsdoc and standard may be installed via package manager
+```
+
+#### Scripts usage
+Awailable only if dev dependencies were installed:
+
+```sh
+# Generate documentation (output is going to *documentation* directory of project root):
+./scripts/documentation.sh
+
+# After generating documentation it can be opened with:
+./scripts/show-documentation.sh
+
+# Run standard (tom_wu directory is untouched):
+./scripts/standard.sh
+```
+
+### Usage Examples
+
+#### Import and Export PrivKey
 
 ```js
+// In Browser:
 import {
   PrivKey
 } from './src/crypto.js'
+
+// In Node:
+import {
+  PrivKey
+} from '@lyavon/es6_crypto'
 
 const privKey1 = await PrivKey.from('random')
 
@@ -46,14 +105,22 @@ crypto.getRandomValues(seed)
 const privKey6 = await PrivKey.from('seed', seed)
 ```
 
-### Import and Export PubKey:
+#### Import and Export PubKey
 
 ```js
+// In Browser:
 import {
   Convert,
   PrivKey,
   PubKey
 } from './src/crypto.js'
+
+// In Node:
+import {
+  Convert,
+  PrivKey,
+  PubKey
+} from '@lyavon/es6_crypto'
 
 const privKey = await PrivKey.from('random')
 const pubKey1 = await privKey.derivePublicKey()
@@ -75,12 +142,18 @@ const y = Convert.urlBase64ToArrayBuffer(jwk.y)
 const pubKey6 = await PubKey.from('coordinates', x, y)
 ```
 
-### Import and Export KeyPair:
+#### Import and Export KeyPair
 
 ```js
+// In Browser:
 import {
   KeyPair
 } from './src/crypto.js'
+
+// In Node:
+import {
+  KeyPair
+} from '@lyavon/es6_crypto'
 
 const keyPair1 = await KeyPair.from('random')
 
@@ -101,9 +174,10 @@ crypto.getRandomValues(seed)
 const keyPair6 = await KeyPair.from('seed', seed)
 ```
 
-### Cryptographic operations
+#### Cryptographic operations
 
 ```js
+// In Browser:
 import {
   Convert,
   Crypto,
@@ -111,6 +185,15 @@ import {
   PrivKey,
   PubKey
 } from './src/crypto.js';
+
+// In Node:
+import {
+  Convert,
+  Crypto,
+  KeyPair,
+  PrivKey,
+  PubKey
+} from '@lyavon/es6_crypto'
 
 const data = (new TextEncoder()).encode('Test')
 const keyPair = await KeyPair.from('random')
@@ -130,18 +213,6 @@ const enc1 = await Crypto.encrypt(privKey, tmpKeyPair.pub(), data, iv)
 const enc2 = await Crypto.encrypt(keyPair, tmpKeyPair.pub(), data, iv)
 const dec1 = await Crypto.decrypt(pubKey, tmpKeyPair.priv(), enc2.encryptedData, enc2.iv)
 const dec2 = await Crypto.decrypt(keyPair.pub(), tmpKeyPair, enc1.encryptedData, enc1.iv)
-```
-
-### Scripts usage:
-```sh
-# Assuming Current directory is project root
-chmod +x ./scripts/*.sh
-
-# Generate jsdoc (output is going to *documentation* directory of project root):
-./scripts/documentation.sh
-
-# Run standard (tom_wu directory is untouched):
-./scripts/standard.sh
 ```
 
 ## License
