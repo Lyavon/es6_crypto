@@ -305,7 +305,7 @@ class PrivKey {
    * @async
    * @description Export PrivKey in a given format.
    * @param {string} [type='b64'] Type of source to import from (one of: 'b64',
-   * 'hex', 'pkcs8', 'jwk', 'raw').
+   * 'hex', 'pkcs8', 'jwk').
    * @returns {*} Export result.
    */
   async export (type = 'b64') {

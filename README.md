@@ -1,5 +1,5 @@
 # es6\_crypto
-es6\_crypto is an convenient wrapper around crypto.subtle. It's aim is to
+es6\_crypto is an convenient wrapper around crypto.subtle. Its aim is to
 simplify usage of secp256r1 cryptography for ES6.
 
 ## Features:
@@ -29,12 +29,14 @@ simplify usage of secp256r1 cryptography for ES6.
 # No Dependencies
 npm install "git+https://github.com/Lyavon/es6_crypto.git"
 
-# With Dev Dependencies
-npm install "git+https://github.com/Lyavon/es6_crypto.git" --save-dev
+# Development
+git clone https://github.com/Lyavon/es6_crypto.git
+cd es6_crypto
+npm install
 ```
 
 #### Scripts usage
-Awailable only if dev dependencies were installed:
+Awailable Only for Development:
 
 ```sh
 # Generate jsdoc (output is going to *documentation* directory of project root):
@@ -45,6 +47,9 @@ npm run show-documentation
 
 # Run standard (tom_wu directory is untouched):
 npm run standard
+
+# Run unit tests:
+npm run test
 ```
 
 ### As Standalone Package
@@ -54,7 +59,9 @@ npm run standard
 ```sh
 git clone https://github.com/Lyavon/es6_crypto.git
 
-# Optionally jsdoc and standard may be installed via package manager
+# Optionally:
+# jsdoc and standard may be installed via package manager or npm
+sudo npm install -g jest jsdoc standard
 ```
 
 #### Scripts usage
@@ -69,6 +76,9 @@ Awailable only if dev dependencies were installed:
 
 # Run standard (tom_wu directory is untouched):
 ./scripts/standard.sh
+
+# Run unit tests:
+./scripts/test.sh
 ```
 
 ### Usage Examples
@@ -184,7 +194,7 @@ import {
   KeyPair,
   PrivKey,
   PubKey
-} from './src/crypto.js';
+} from './src/crypto.js'
 
 // In Node:
 import {

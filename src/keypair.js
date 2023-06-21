@@ -131,7 +131,7 @@ class KeyPair {
    * @async
    * @description Export KeyPair in a given format.
    * @param {string} [type='b64'] Type of source to export to (one of: 'b64',
-   * 'hex', 'pkcs8', 'jwk', 'raw').
+   * 'hex', 'pkcs8', 'jwk').
    * @returns {*} Export result.
    */
   async export (...args) {
