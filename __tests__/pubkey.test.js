@@ -66,20 +66,26 @@ test(
 )
 
 test(
-  'PubKey can be exported as raw',
+  'PubKey can be exported and imported back as raw',
   async () => {
     const pub = kp.pub()
-    expect(await pub.export('raw')).toBeDefined()
+    const raw = await pub.export('raw')
+    expect(await PubKey.from('raw', raw)).toEqual(pub)
   }
 )
 
 test(
-  'PubKey can be imported as coordinates',
+  'PubKey can be exported and imported back as coordinates',
   async () => {
     const pub = kp.pub()
-    const jwk = await pub.export('jwk')
-    const x = Convert.urlBase64ToArrayBuffer(jwk.x)
-    const y = Convert.urlBase64ToArrayBuffer(jwk.y)
-    expect(await PubKey.from('coordinates', x, y)).toEqual(pub)
+    const coordinates = await pub.export('coordinates')
+    expect(await PubKey.from('coordinates', coordinates.x, coordinates.y)).toEqual(pub)
+  }
+)
+
+test(
+  'PubKey can be imported from PrivKey',
+  async () => {
+    expect(await PubKey.from('priv', kp.priv())).toEqual(kp.pub())
   }
 )

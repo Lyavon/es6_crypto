@@ -26,7 +26,7 @@ import {
 
 /**
  * @classdesc KeyPair is a container for PrivKey and PubKey. It is capable of
- * exporting itself into base64, hex, pksc8, jwk, raw and can
+ * exporting itself into base64, hex, pksc8, jwk, d and can
  * be imported from base64, hex, pkcs8, jwk, d, seed, random. crypto.js allows
  * to sign, verify, encrypt and decrypt with it.
  */
@@ -117,7 +117,7 @@ class KeyPair {
         priv = await PrivKey.from(type, ...args)
         return new KeyPair(
           priv,
-          await priv.derivePublicKey()
+          await PubKey.from('priv', priv)
         )
       case 'jwk':
         return this.fromJwk(...args)
@@ -131,7 +131,7 @@ class KeyPair {
    * @async
    * @description Export KeyPair in a given format.
    * @param {string} [type='b64'] Type of source to export to (one of: 'b64',
-   * 'hex', 'pkcs8', 'jwk').
+   * 'hex', 'pkcs8', 'jwk', 'd').
    * @returns {*} Export result.
    */
   async export (...args) {

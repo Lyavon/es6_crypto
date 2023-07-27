@@ -61,21 +61,20 @@ test(
 )
 
 test(
+  'KeyPair can be exported and imported back as d',
+  async () => {
+    const d = await kp.export('d')
+    expect(await KeyPair.from('d', d)).toEqual(kp)
+  }
+)
+
+test(
   'KeyPair can be imported as seed',
   async () => {
     const password = (new TextEncoder()).encode('my_secret_password')
     const kp1 = await KeyPair.from('seed', password)
     const kp2 = await KeyPair.from('seed', password)
     expect(kp1).toEqual(kp2)
-  }
-)
-
-test(
-  'KeyPair can be imported as d',
-  async () => {
-    const jwk = await kp.export('jwk')
-    const d = Convert.urlBase64ToArrayBuffer(jwk.d)
-    expect(await KeyPair.from('d', d)).toEqual(kp)
   }
 )
 

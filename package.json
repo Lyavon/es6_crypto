@@ -1,6 +1,6 @@
 {
   "name": "@lyavon/es6_crypto",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Convenient secp256r1 wrapper for srypto.subtle",
   "license": {
     "type": "GPL-3.0",

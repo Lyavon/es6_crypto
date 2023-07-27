@@ -61,6 +61,14 @@ test(
 )
 
 test(
+  'PrivKey can be exported and imported back as d',
+  async () => {
+    const d = await priv.export('d')
+    expect(await PrivKey.from('d', d)).toEqual(priv)
+  }
+)
+
+test(
   'PrivKey can be imported as seed',
   async () => {
     const password = (new TextEncoder()).encode('my_secret_password')
@@ -71,27 +79,11 @@ test(
 )
 
 test(
-  'PrivKey can be imported as d',
-  async () => {
-    const jwk = await priv.export('jwk')
-    const d = Convert.urlBase64ToArrayBuffer(jwk.d)
-    expect(await PrivKey.from('d', d)).toEqual(priv)
-  }
-)
-
-test(
   'PrivKey can be imported as random',
   async () => {
     expect(
       (await (await PrivKey.from('random')).export('hex')) ===
       (await priv.export('hex'))
     ).toBeFalsy()
-  }
-)
-
-test(
-  'PrivKey can derive PubKey',
-  async () => {
-    expect(await priv.derivePublicKey()).toBeDefined()
   }
 )

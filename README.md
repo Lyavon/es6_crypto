@@ -3,11 +3,11 @@ es6\_crypto is an convenient wrapper around crypto.subtle. Its aim is to
 simplify usage of secp256r1 cryptography for ES6.
 
 ## Features:
-- Export PubKey to base64, hex, spki, jwk, raw.
-- Import PubKey from base64, hex, spki, jwk, coordinates.
-- Export PrivKey to base64, hex, pkcs8, jwk.
+- Export PubKey to base64, hex, spki, jwk, raw, coordinates.
+- Import PubKey from base64, hex, spki, jwk, raw, coordinates, PrivKey.
+- Export PrivKey to base64, hex, pkcs8, jwk, d.
 - Import PrivKey from base64, hex, pkcs8, jwk, d, seed, random.
-- Derive PubKey from PrivKey.
+- Derive PubKey from PrivKey (see __Import PubKey__).
 - Export and Import KeyPair from and to any Format PrivKey Supports.
 - Encrypt, Verify Operations for Single PubKey Instance.
 - Decrypt, Sign Operations for Single PrivKey Instance.
@@ -110,9 +110,12 @@ const privKey4 = await PrivKey.from('pkcs8', pkcs8)
 const jwk = await privKey4.export('jwk')
 const privKey5 = await PrivKey.from('jwk', jwk)
 
+const d = await privKey5.export('d')
+const privKey6 = await PrivKey.from('d', d)
+
 const seed = new Uint8Array(32)
 crypto.getRandomValues(seed)
-const privKey6 = await PrivKey.from('seed', seed)
+const privKey7 = await PrivKey.from('seed', seed)
 ```
 
 #### Import and Export PubKey
@@ -133,7 +136,7 @@ import {
 } from '@lyavon/es6_crypto'
 
 const privKey = await PrivKey.from('random')
-const pubKey1 = await privKey.derivePublicKey()
+const pubKey1 = await PubKey.from('priv', privKey)
 
 const b64 = await pubKey1.export('b64')
 const pubKey2 = await PubKey.from('b64', b64)
@@ -147,9 +150,11 @@ const pubKey4 = await PubKey.from('spki', spki)
 const jwk = await pubKey4.export('jwk')
 const pubKey5 = await PubKey.from('jwk', jwk)
 
-const x = Convert.urlBase64ToArrayBuffer(jwk.x)
-const y = Convert.urlBase64ToArrayBuffer(jwk.y)
-const pubKey6 = await PubKey.from('coordinates', x, y)
+const coords = await pubKey5.export('coordinates')
+const pubKey6 = await PubKey.from('coordinates', coords.x, coords.y)
+
+const raw = await pubKey6.export('raw')
+const pubKey7 = await PubKey.from('raw', raw)
 ```
 
 #### Import and Export KeyPair
@@ -179,9 +184,12 @@ const keyPair4 = await KeyPair.from('pkcs8', pkcs8)
 const jwk = await keyPair4.export('jwk')
 const keyPair5 = await KeyPair.from('jwk', jwk)
 
+const d = await keyPair5.export('d')
+const keyPair6 = await KeyPair.from('d', d)
+
 const seed = new Uint8Array(32)
 crypto.getRandomValues(seed)
-const keyPair6 = await KeyPair.from('seed', seed)
+const keyPair7 = await KeyPair.from('seed', seed)
 ```
 
 #### Cryptographic operations

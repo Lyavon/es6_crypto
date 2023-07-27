@@ -26,9 +26,6 @@ import {
 import {
   ECCurveFp
 } from './tom_vu/ec.js'
-import {
-  PubKey
-} from './pubkey.js'
 
 /**
  * @description PrivKey needs to perform software public key derivation.
@@ -44,7 +41,7 @@ import {
 
 /**
  * @classdesc PrivKey is a wrapper for both ECDSA and ECDH crypto.subtle keys.
- * It is capable of exporting itself into base64, hex, pksc8, jwk and can
+ * It is capable of exporting itself into base64, hex, pksc8, jwk, d and can
  * be imported from base64, hex, pkcs8, jwk, d, seed, random. crypto.js allows
  * to sign and decrypt with it.
  */
@@ -205,11 +202,11 @@ class PrivKey {
    * @private
    * @async
    * @static
-   * @description Import PrivKey from d value.
+   * @description Import PrivKey from raw d value.
    * @param {ArrayBuffer} dBuf ArrayBuffer with d value in BigEndian.
    * @returns {PrivKey} Imported PrivKey.
    */
-  static async fromD (dBuf) {
+  static async fromRawD (dBuf) {
     const bigIntD = new BigInteger(
       Convert.arrayBufferToHexString(dBuf),
       16
@@ -235,6 +232,18 @@ class PrivKey {
    * @private
    * @async
    * @static
+   * @description Import PrivKey from raw d value.
+   * @param {string} d D value as urlBase64 encoded string.
+   * @returns {PrivKey} Imported PrivKey.
+   */
+  static async fromD (d) {
+    return this.fromRawD(Convert.urlBase64ToArrayBuffer(d))
+  }
+
+  /**
+   * @private
+   * @async
+   * @static
    * @description Import PrivKey from a seed. Seed is an initial value for
    * PrivKey generation. Consecutive hashing is applied to it until it becomes
    * valid d value.
@@ -243,7 +252,7 @@ class PrivKey {
    */
   static async fromSeed (seed) {
     try {
-      const key = await this.fromD(seed)
+      const key = await this.fromRawD(seed)
       return key
     } catch (e) {
       return this.fromSeed(
@@ -304,8 +313,8 @@ class PrivKey {
    * @public
    * @async
    * @description Export PrivKey in a given format.
-   * @param {string} [type='b64'] Type of source to import from (one of: 'b64',
-   * 'hex', 'pkcs8', 'jwk').
+   * @param {string} [type='b64'] Type of source to export to (one of: 'b64',
+   * 'hex', 'pkcs8', 'jwk', 'd').
    * @returns {*} Export result.
    */
   async export (type = 'b64') {
@@ -314,20 +323,11 @@ class PrivKey {
         return Convert.arrayBufferToBase64(await this.export('pkcs8'))
       case 'hex':
         return Convert.arrayBufferToHexString(await this.export('pkcs8'))
+      case 'd':
+        return (await this.export('jwk')).d
       default:
         return crypto.subtle.exportKey(type, this.ecdh())
     }
-  }
-
-  /**
-   * @public
-   * @async
-   * @description Derive PubKey from the PrivKey.
-   * @returns {PubKey} Derived PubKey.
-   */
-  async derivePublicKey () {
-    const jwk = await crypto.subtle.exportKey('jwk', this.ecdh())
-    return PubKey.from('jwk', jwk)
   }
 }
 
