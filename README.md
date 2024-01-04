@@ -2,16 +2,22 @@
 es6\_crypto is an convenient wrapper around crypto.subtle. Its aim is to
 simplify usage of secp256r1 cryptography for ES6.
 
+There are corresponding [java\_crypto](https://github.com/Lyavon/java_crypto)
+and [swift\_crypto](https://github.com/Lyavon/swift_crypto) wrappers that
+implement crypto.subtle standart and have identical API to this package.
+
 ## Features:
 - Export PubKey to base64, hex, spki, jwk, raw, coordinates.
 - Import PubKey from base64, hex, spki, jwk, raw, coordinates, PrivKey.
-- Export PrivKey to base64, hex, pkcs8, jwk, d.
-- Import PrivKey from base64, hex, pkcs8, jwk, d, seed, random.
+- Export PrivKey to base64, hex, pkcs8, jwk, d, raw.
+- Import PrivKey from base64, hex, pkcs8, jwk, d, raw seed, random.
 - Derive PubKey from PrivKey (see __Import PubKey__).
 - Export and Import KeyPair from and to any Format PrivKey Supports.
+- Optimized import operations for KeyPair.
 - Encrypt, Verify Operations for Single PubKey Instance.
 - Decrypt, Sign Operations for Single PrivKey Instance.
 - Encrypt, Decrypt, Sign, Verify Operations for Single KeyPair Instance.
+- Full compatibility with java\_crypto and swift\_crypto.
 - Scripts for Documentation and Linting.
 
 ## Dependencies:
@@ -96,26 +102,29 @@ import {
   PrivKey
 } from '@lyavon/es6_crypto'
 
-const privKey1 = await PrivKey.from('random')
+const privKey1 = await PrivKey.fromRandom()
 
-const b64 = await privKey1.export('b64')
-const privKey2 = await PrivKey.from('b64', b64)
+const b64 = await privKey1.toBase64()
+const privKey2 = await PrivKey.fromBase64(b64)
 
-const hex = await privKey2.export('hex')
-const privKey3 = await PrivKey.from('hex', hex)
+const hex = await privKey2.toHex()
+const privKey3 = await PrivKey.fromHex(hex)
 
-const pkcs8 = await privKey3.export('pkcs8')
-const privKey4 = await PrivKey.from('pkcs8', pkcs8)
+const pkcs8 = await privKey3.toPkcs8()
+const privKey4 = await PrivKey.fromPkcs8(pkcs8)
 
-const jwk = await privKey4.export('jwk')
-const privKey5 = await PrivKey.from('jwk', jwk)
+const jwk = await privKey4.toJwk()
+const privKey5 = await PrivKey.fromJwk(jwk)
 
-const d = await privKey5.export('d')
-const privKey6 = await PrivKey.from('d', d)
+const d = await privKey5.toD()
+const privKey6 = await PrivKey.fromD(d)
+
+const raw = await privKey6.toRaw()
+const privKey7 = await PrivKey.fromRaw(raw)
 
 const seed = new Uint8Array(32)
 crypto.getRandomValues(seed)
-const privKey7 = await PrivKey.from('seed', seed)
+const privKey8 = await PrivKey.fromSeed(seed)
 ```
 
 #### Import and Export PubKey
@@ -135,26 +144,26 @@ import {
   PubKey
 } from '@lyavon/es6_crypto'
 
-const privKey = await PrivKey.from('random')
-const pubKey1 = await PubKey.from('priv', privKey)
+const privKey = await PrivKey.fromRandom()
+const pubKey1 = await PubKey.fromPrivKey(privKey)
 
-const b64 = await pubKey1.export('b64')
-const pubKey2 = await PubKey.from('b64', b64)
+const b64 = await pubKey1.toBase64()
+const pubKey2 = await PubKey.fromBase64(b64)
 
-const hex = await pubKey2.export('hex')
-const pubKey3 = await PubKey.from('hex', hex)
+const hex = await pubKey2.toHex()
+const pubKey3 = await PubKey.fromHex(hex)
 
-const spki = await pubKey3.export('spki')
-const pubKey4 = await PubKey.from('spki', spki)
+const spki = await pubKey3.toSpki()
+const pubKey4 = await PubKey.fromSpki(spki)
 
-const jwk = await pubKey4.export('jwk')
-const pubKey5 = await PubKey.from('jwk', jwk)
+const jwk = await pubKey4.toJwk()
+const pubKey5 = await PubKey.fromJwk(jwk)
 
-const coords = await pubKey5.export('coordinates')
-const pubKey6 = await PubKey.from('coordinates', coords.x, coords.y)
+const coords = await pubKey5.toCoordinates()
+const pubKey6 = await PubKey.fromCoordinates(coords.x, coords.y)
 
-const raw = await pubKey6.export('raw')
-const pubKey7 = await PubKey.from('raw', raw)
+const raw = await pubKey6.toRaw()
+const pubKey7 = await PubKey.fromRaw(raw)
 ```
 
 #### Import and Export KeyPair
@@ -170,26 +179,29 @@ import {
   KeyPair
 } from '@lyavon/es6_crypto'
 
-const keyPair1 = await KeyPair.from('random')
+const keyPair1 = await KeyPair.fromRandom()
 
-const b64 = await keyPair1.export('b64')
-const keyPair2 = await KeyPair.from('b64', b64)
+const b64 = await keyPair1.toBase64()
+const keyPair2 = await KeyPair.fromBase64(b64)
 
-const hex = await keyPair2.export('hex')
-const keyPair3 = await KeyPair.from('hex', hex)
+const hex = await keyPair2.toHex()
+const keyPair3 = await KeyPair.fromHex(hex)
 
-const pkcs8 = await keyPair3.export('pkcs8')
-const keyPair4 = await KeyPair.from('pkcs8', pkcs8)
+const pkcs8 = await keyPair3.toPkcs8()
+const keyPair4 = await KeyPair.fromPkcs8(pkcs8)
 
-const jwk = await keyPair4.export('jwk')
-const keyPair5 = await KeyPair.from('jwk', jwk)
+const jwk = await keyPair4.toJwk()
+const keyPair5 = await KeyPair.fromJwk(jwk)
 
-const d = await keyPair5.export('d')
-const keyPair6 = await KeyPair.from('d', d)
+const d = await keyPair5.toD()
+const keyPair6 = await KeyPair.fromD(d)
+
+const raw = await keyPair6.toRaw()
+const keyPair7 = await KeyPair.fromRaw(raw)
 
 const seed = new Uint8Array(32)
 crypto.getRandomValues(seed)
-const keyPair7 = await KeyPair.from('seed', seed)
+const keyPair8 = await KeyPair.fromSeed(seed)
 ```
 
 #### Cryptographic operations
@@ -214,7 +226,7 @@ import {
 } from '@lyavon/es6_crypto'
 
 const data = (new TextEncoder()).encode('Test')
-const keyPair = await KeyPair.from('random')
+const keyPair = await KeyPair.fromRandom()
 const privKey = keyPair.priv()
 const pubKey = keyPair.pub()
 
@@ -225,7 +237,7 @@ const ver2 = await Crypto.verify(keyPair, data, sign1)
 
 const iv = new Uint8Array(16)
 crypto.getRandomValues(iv)
-const tmpKeyPair = await KeyPair.from('random')
+const tmpKeyPair = await KeyPair.fromRandom()
 
 const enc1 = await Crypto.encrypt(privKey, tmpKeyPair.pub(), data, iv)
 const enc2 = await Crypto.encrypt(keyPair, tmpKeyPair.pub(), data, iv)

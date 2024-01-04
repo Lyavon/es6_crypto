@@ -1,4 +1,4 @@
-/* Copyright 2023 Leonid Ragunovich
+/* Copyright 2023, 2024 Leonid Ragunovich
  *
  * This file is part of es6_crypto.
  *
@@ -25,46 +25,54 @@ const PrivKey = crypto.PrivKey
 let priv = null
 
 beforeEach(async () => {
-  priv = await PrivKey.from('random')
+  priv = await PrivKey.fromRandom()
 })
 
 test(
   'PrivKey can be exported and imported back as base64',
   async () => {
-    const b64 = await priv.export('b64')
-    expect(await PrivKey.from('b64', b64)).toEqual(priv)
+    const b64 = await priv.toBase64()
+    expect(await PrivKey.fromBase64(b64)).toEqual(priv)
   }
 )
 
 test(
   'PrivKey can be exported and imported back as hex',
   async () => {
-    const hex = await priv.export('hex')
-    expect(await PrivKey.from('hex', hex)).toEqual(priv)
+    const hex = await priv.toHex()
+    expect(await PrivKey.fromHex(hex)).toEqual(priv)
   }
 )
 
 test(
   'PrivKey can be exported and imported back as jwk',
   async () => {
-    const jwk = await priv.export('jwk')
-    expect(await PrivKey.from('jwk', jwk)).toEqual(priv)
+    const jwk = await priv.toJwk()
+    expect(await PrivKey.fromJwk(jwk)).toEqual(priv)
   }
 )
 
 test(
   'PrivKey can be exported and imported back as pkcs8',
   async () => {
-    const pkcs8 = await priv.export('pkcs8')
-    expect(await PrivKey.from('pkcs8', pkcs8)).toEqual(priv)
+    const pkcs8 = await priv.toPkcs8()
+    expect(await PrivKey.fromPkcs8(pkcs8)).toEqual(priv)
   }
 )
 
 test(
   'PrivKey can be exported and imported back as d',
   async () => {
-    const d = await priv.export('d')
-    expect(await PrivKey.from('d', d)).toEqual(priv)
+    const d = await priv.toD()
+    expect(await PrivKey.fromD(d)).toEqual(priv)
+  }
+)
+
+test(
+  'PrivKey can be exported and imported back as raw',
+  async () => {
+    const raw = await priv.toRaw()
+    expect(await PrivKey.fromRaw(raw)).toEqual(priv)
   }
 )
 
@@ -72,8 +80,8 @@ test(
   'PrivKey can be imported as seed',
   async () => {
     const password = (new TextEncoder()).encode('my_secret_password')
-    const priv1 = await PrivKey.from('seed', password)
-    const priv2 = await PrivKey.from('seed', password)
+    const priv1 = await PrivKey.fromSeed(password)
+    const priv2 = await PrivKey.fromSeed(password)
     expect(priv1).toEqual(priv2)
   }
 )
@@ -82,8 +90,8 @@ test(
   'PrivKey can be imported as random',
   async () => {
     expect(
-      (await (await PrivKey.from('random')).export('hex')) ===
-      (await priv.export('hex'))
+      (await (await PrivKey.fromRandom()).toHex()) ===
+      (await priv.toHex())
     ).toBeFalsy()
   }
 )

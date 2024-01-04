@@ -1,4 +1,4 @@
-/* Copyright 2023 Leonid Ragunovich
+/* Copyright 2023, 2024 Leonid Ragunovich
  *
  * This file is part of es6_crypto.
  *
@@ -25,46 +25,54 @@ const KeyPair = crypto.KeyPair
 let kp = null
 
 beforeEach(async () => {
-  kp = await KeyPair.from('random')
+  kp = await KeyPair.fromRandom()
 })
 
 test(
   'KeyPair can be exported and imported back as base64',
   async () => {
-    const b64 = await kp.export('b64')
-    expect(await KeyPair.from('b64', b64)).toEqual(kp)
+    const b64 = await kp.toBase64()
+    expect(await KeyPair.fromBase64(b64)).toEqual(kp)
   }
 )
 
 test(
   'KeyPair can be exported and imported back as hex',
   async () => {
-    const hex = await kp.export('hex')
-    expect(await KeyPair.from('hex', hex)).toEqual(kp)
+    const hex = await kp.toHex()
+    expect(await KeyPair.fromHex(hex)).toEqual(kp)
   }
 )
 
 test(
   'KeyPair can be exported and imported back as jwk',
   async () => {
-    const jwk = await kp.export('jwk')
-    expect(await KeyPair.from('jwk', jwk)).toEqual(kp)
+    const jwk = await kp.toJwk()
+    expect(await KeyPair.fromJwk(jwk)).toEqual(kp)
   }
 )
 
 test(
   'KeyPair can be exported and imported back as pkcs8',
   async () => {
-    const pkcs8 = await kp.export('pkcs8')
-    expect(await KeyPair.from('pkcs8', pkcs8)).toEqual(kp)
+    const pkcs8 = await kp.toPkcs8()
+    expect(await KeyPair.fromPkcs8(pkcs8)).toEqual(kp)
   }
 )
 
 test(
   'KeyPair can be exported and imported back as d',
   async () => {
-    const d = await kp.export('d')
-    expect(await KeyPair.from('d', d)).toEqual(kp)
+    const d = await kp.toD()
+    expect(await KeyPair.fromD(d)).toEqual(kp)
+  }
+)
+
+test(
+  'KeyPair can be exported and imported back as raw',
+  async () => {
+    const raw = await kp.toRaw()
+    expect(await KeyPair.fromRaw(raw)).toEqual(kp)
   }
 )
 
@@ -72,8 +80,8 @@ test(
   'KeyPair can be imported as seed',
   async () => {
     const password = (new TextEncoder()).encode('my_secret_password')
-    const kp1 = await KeyPair.from('seed', password)
-    const kp2 = await KeyPair.from('seed', password)
+    const kp1 = await KeyPair.fromSeed(password)
+    const kp2 = await KeyPair.fromSeed(password)
     expect(kp1).toEqual(kp2)
   }
 )
@@ -82,8 +90,8 @@ test(
   'KeyPair can be imported as random',
   async () => {
     expect(
-      (await (await KeyPair.from('random')).export('hex')) ===
-      (await kp.export('hex'))
+      (await (await KeyPair.fromRandom()).toHex()) ===
+      (await kp.toHex())
     ).toBeFalsy()
   }
 )

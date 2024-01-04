@@ -1,4 +1,4 @@
-/* Copyright 2023 Leonid Ragunovich
+/* Copyright 2023, 2024 Leonid Ragunovich
  *
  * This file is part of es6_crypto.
  *
@@ -23,9 +23,11 @@ import {
 
 /**
  * @classdesc PubKey is a wrapper for both ECDSA and ECDH crypto.subtle keys.
- * It is capable of exporting itself into base64, hex, spki, jwk, raw, coordinates and can
- * be imported from base64, hex, spki, jwk, raw, coordinates, PrivKey. crypto.js allows to
- * verify and encrypt with it.
+ *
+ * It is capable of export/import operations to/from base64, hex, spki, jwk,
+ * raw, coordinates. Additionally it can be imported from PrivKey.
+ *
+ * crypto.js allows to verify and encrypt with it.
  */
 class PubKey {
   /**
@@ -50,7 +52,7 @@ class PubKey {
 
   /**
    * @constructor
-   * @private
+   * @public
    * @param {CryptoKey} ecdh Generated ECDH public key (extractable).
    * @param {CryptoKey} ecdsa Generated ECDSA public key (extractable).
    */
@@ -80,7 +82,7 @@ class PubKey {
   }
 
   /**
-   * @private
+   * @public
    * @async
    * @static
    * @description Import PubKey from ArrayBuffer in SPKI format.
@@ -106,7 +108,7 @@ class PubKey {
   }
 
   /**
-   * @private
+   * @public
    * @async
    * @static
    * @description Import PubKey from base64 string in SPKI format.
@@ -114,11 +116,24 @@ class PubKey {
    * @returns {PubKey} Imported PubKey.
    */
   static async fromBase64 (b64) {
-    return this.fromSpki(Convert.base64ToArrayBuffer(b64))
+    const spki = Convert.base64ToArrayBuffer(b64)
+    return this.fromSpki(spki)
   }
 
   /**
-   * @private
+   * @public
+   * @async
+   * @static
+   * @description Import PubKey from hex string.
+   * @param {string} hex Hex encoded string of SPKI.
+   * @returns {PubKey} Imported PubKey.
+   */
+  static async fromHex (hex) {
+    return this.fromSpki(Convert.hexStringToArrayBuffer(hex))
+  }
+
+  /**
+   * @public
    * @async
    * @static
    * @description Import PubKey from JWK.
@@ -147,7 +162,7 @@ class PubKey {
   }
 
   /**
-   * @private
+   * @public
    * @async
    * @static
    * @description Import PubKey from raw.
@@ -173,7 +188,7 @@ class PubKey {
   }
 
   /**
-   * @private
+   * @public
    * @async
    * @static
    * @description Import PubKey from Coordinates.
@@ -192,7 +207,7 @@ class PubKey {
   }
 
   /**
-   * @private
+   * @public
    * @async
    * @static
    * @description Import PubKey from PrivKey.
@@ -200,60 +215,30 @@ class PubKey {
    * @returns {PubKey} Imported PubKey.
    */
   static async fromPrivKey (priv) {
-    return PubKey.from('jwk', await priv.export('jwk'))
-  }
-
-  /**
-   * @private
-   * @async
-   * @static
-   * @description Import PubKey from hex string.
-   * @param {string} hex Hex encoded string of SPKI.
-   * @returns {PubKey} Imported PubKey.
-   */
-  static async fromHexString (hex) {
-    return this.fromSpki(Convert.hexStringToArrayBuffer(hex))
+    return PubKey.fromJwk(await priv.toJwk())
   }
 
   /**
    * @public
    * @async
-   * @static
-   * @description Import PubKey from a given format.
-   * @param {string} type Type of source to import from (one of: 'b64', 'hex',
-   * 'spki', 'jwk', 'coordinates', 'raw', 'priv').
-   * @param {...*} args Required arguments for the import.
-   * @returns {PubKey} Imported PubKey.
+   * @description Export PubKey to RAW format.
+   * @returns {ArrayBuffer} Export result.
    */
-  static async from (type, ...args) {
-    switch (type) {
-      case 'b64':
-        return this.fromBase64(...args)
-      case 'hex':
-        return this.fromHexString(...args)
-      case 'spki':
-        return this.fromSpki(...args)
-      case 'jwk':
-        return this.fromJwk(...args)
-      case 'coordinates':
-        return this.fromCoordinates(...args)
-      case 'raw':
-        return this.fromRaw(...args)
-      case 'priv':
-        return this.fromPrivKey(...args)
-      default:
-        throw new Error(`Unknown type ${type} is provided`)
-    }
+  async toRaw () {
+    return crypto.subtle.exportKey(
+      'raw',
+      this.ecdh()
+    )
   }
 
   /**
-   * @private
+   * @public
    * @async
-   * @description Export PubKey to raw format.
+   * @description Export PubKey to coordinates.
    * @returns {Object} Export result.
    */
   async toCoordinates () {
-    const raw = await this.export('raw')
+    const raw = await this.toRaw()
     return {
       x: raw.slice(1, 33),
       y: raw.slice(33, 65)
@@ -263,25 +248,49 @@ class PubKey {
   /**
    * @public
    * @async
-   * @description Export PubKey in a given format.
-   * @param {string} [type='b64'] Type of source to import from (one of: 'b64', 'hex',
-   * 'spki', 'jwk', 'raw', 'coordinates').
-   * @returns {*} Export result.
+   * @description Export PubKey to SPKI format.
+   * @returns {ArrayBuffer} Export result.
    */
-  async export (type = 'b64') {
-    switch (type) {
-      case 'b64':
-        return Convert.arrayBufferToBase64(await this.export('spki'))
-      case 'hex':
-        return Convert.arrayBufferToHexString(await this.export('spki'))
-      case 'coordinates':
-        return this.toCoordinates()
-      default:
-        return crypto.subtle.exportKey(
-          type,
-          this.ecdh()
-        )
-    }
+  async toSpki () {
+    return crypto.subtle.exportKey(
+      'spki',
+      this.ecdh()
+    )
+  }
+
+  /**
+   * @public
+   * @async
+   * @description Export PubKey to Base64 encoded string.
+   * @returns {string} Export result.
+   */
+  async toBase64 () {
+    const spki = await this.toSpki()
+    return Convert.arrayBufferToBase64(spki)
+  }
+
+  /**
+   * @public
+   * @async
+   * @description Export PubKey to hex encoded string.
+   * @returns {string} Export result.
+   */
+  async toHex () {
+    const spki = await this.toSpki()
+    return Convert.arrayBufferToHexString(spki)
+  }
+
+  /**
+   * @public
+   * @async
+   * @description Export PubKey to JWK.
+   * @returns {Object} Export result.
+   */
+  async toJwk () {
+    return crypto.subtle.exportKey(
+      'jwk',
+      this.ecdh()
+    )
   }
 }
 

@@ -1,4 +1,4 @@
-/* Copyright 2023 Leonid Ragunovich
+/* Copyright 2023, 2024 Leonid Ragunovich
  *
  * This file is part of es6_crypto.
  *
@@ -26,15 +26,15 @@ const KeyPair = crypto.KeyPair
 let kp = null
 
 beforeEach(async () => {
-  kp = await KeyPair.from('random')
+  kp = await KeyPair.fromRandom()
 })
 
 test(
   'PubKey can be exported and imported back as base64',
   async () => {
     const pub = kp.pub()
-    const b64 = await pub.export('b64')
-    expect(await PubKey.from('b64', b64)).toEqual(pub)
+    const b64 = await pub.toBase64()
+    expect(await PubKey.fromBase64(b64)).toEqual(pub)
   }
 )
 
@@ -42,8 +42,8 @@ test(
   'PubKey can be exported and imported back as hex',
   async () => {
     const pub = kp.pub()
-    const hex = await pub.export('hex')
-    expect(await PubKey.from('hex', hex)).toEqual(pub)
+    const hex = await pub.toHex()
+    expect(await PubKey.fromHex(hex)).toEqual(pub)
   }
 )
 
@@ -51,8 +51,8 @@ test(
   'PubKey can be exported and imported back as jwk',
   async () => {
     const pub = kp.pub()
-    const jwk = await pub.export('jwk')
-    expect(await PubKey.from('jwk', jwk)).toEqual(pub)
+    const jwk = await pub.toJwk()
+    expect(await PubKey.fromJwk(jwk)).toEqual(pub)
   }
 )
 
@@ -60,8 +60,8 @@ test(
   'PubKey can be exported and imported back as spki',
   async () => {
     const pub = kp.pub()
-    const spki = await pub.export('spki')
-    expect(await PubKey.from('spki', spki)).toEqual(pub)
+    const spki = await pub.toSpki()
+    expect(await PubKey.fromSpki(spki)).toEqual(pub)
   }
 )
 
@@ -69,8 +69,8 @@ test(
   'PubKey can be exported and imported back as raw',
   async () => {
     const pub = kp.pub()
-    const raw = await pub.export('raw')
-    expect(await PubKey.from('raw', raw)).toEqual(pub)
+    const raw = await pub.toRaw()
+    expect(await PubKey.fromRaw(raw)).toEqual(pub)
   }
 )
 
@@ -78,14 +78,14 @@ test(
   'PubKey can be exported and imported back as coordinates',
   async () => {
     const pub = kp.pub()
-    const coordinates = await pub.export('coordinates')
-    expect(await PubKey.from('coordinates', coordinates.x, coordinates.y)).toEqual(pub)
+    const coordinates = await pub.toCoordinates()
+    expect(await PubKey.fromCoordinates(coordinates.x, coordinates.y)).toEqual(pub)
   }
 )
 
 test(
   'PubKey can be imported from PrivKey',
   async () => {
-    expect(await PubKey.from('priv', kp.priv())).toEqual(kp.pub())
+    expect(await PubKey.fromPrivKey(kp.priv())).toEqual(kp.pub())
   }
 )

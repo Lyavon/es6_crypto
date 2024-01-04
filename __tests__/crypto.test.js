@@ -1,4 +1,4 @@
-/* Copyright 2023 Leonid Ragunovich
+/* Copyright 2023, 2024 Leonid Ragunovich
  *
  * This file is part of es6_crypto.
  *
@@ -27,8 +27,8 @@ let bobKp = null
 const data = (new TextEncoder()).encode('test_data').buffer
 
 beforeEach(async () => {
-  aliceKp = await KeyPair.from('random')
-  bobKp = await KeyPair.from('random')
+  aliceKp = await KeyPair.fromRandom()
+  bobKp = await KeyPair.fromRandom()
 })
 
 test(

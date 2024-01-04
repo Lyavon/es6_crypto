@@ -1,4 +1,4 @@
-/* Copyright 2023 Leonid Ragunovich
+/* Copyright 2023, 2024 Leonid Ragunovich
  *
  * This file is part of es6_crypto.
  *
@@ -41,7 +41,7 @@ class Crypto {
    * @async
    * @description Encrypt given data with derived secret key of Alice and Bob.
    * @param {PrivKey|KeyPair} alicePriv PrivKey or KeyPair of a person doing encryption.
-   * @param {PubKey} bobPriv PubKey of a person for whom the encryption is
+   * @param {PubKey|KeyPair} bobPriv PubKey of a person for whom the encryption is
    * happening.
    * @param {ArrayBuffer} dataArray Data to be encrypted.
    * @param {ArrayBuffer} [iv=null] Initial vector for encryption. Will be
@@ -50,6 +50,7 @@ class Crypto {
    */
   static async encrypt (alicePriv, bobPub, dataArray, iv = null) {
     if (alicePriv instanceof KeyPair) { alicePriv = alicePriv.priv() }
+    if (bobPub instanceof KeyPair) { bobPub = bobPub.pub() }
     if (!iv) {
       iv = new Uint8Array(16)
       crypto.getRandomValues(iv)
@@ -132,7 +133,7 @@ class Crypto {
    * @public
    * @async
    * @description Decrypt the data with derived secret of Alice and Bob.
-   * @param {PubKey} PubKey alicePub of a person who has done the encryption.
+   * @param {PubKey|KeyPair} PubKey alicePub of a person who has done the encryption.
    * @param {PrivKey|KeyPair} bobPriv PrivKey or KeyPair of a person for whom
    * the encryption is done.
    * @param {ArrayBuffer} dataArray ArrayBuffer with encrypted data.
@@ -141,6 +142,7 @@ class Crypto {
    */
   static async decrypt (alicePub, bobPriv, dataArray, iv) {
     if (bobPriv instanceof KeyPair) { bobPriv = bobPriv.priv() }
+    if (alicePub instanceof KeyPair) { alicePub = alicePub.pub() }
     const secretKey = await crypto.subtle.deriveKey(
       {
         name: 'ECDH',
